@@ -63,7 +63,7 @@ func (m Main) Run(ctx context.Context) error {
 
 	defer func() {
 		if err = mongoDB.Close(); err != nil {
-			_, _ = fmt.Fprintf(os.Stderr, "Error closing MongoDB client: %v", err)
+			m.Logger.Printf("Error closing MongoDB client: %v", err)
 		}
 	}()
 

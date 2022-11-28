@@ -107,7 +107,7 @@ func (m Main) Run(ctx context.Context) error {
 		}
 
 		i++
-		portID, err := decoder.Token() // Decode the port unique identifier for the port.
+		portID, err := decoder.Token() // Decode the unique identifier for the port.
 		if err != nil {
 			return fmt.Errorf("decoding port ID: %w", err)
 		}

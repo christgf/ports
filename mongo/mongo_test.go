@@ -3,7 +3,6 @@ package mongo_test
 import (
 	"context"
 	"os"
-	"reflect"
 	"testing"
 	"time"
 
@@ -47,17 +46,12 @@ func TestCreateIndexes(t *testing.T) {
 	db, teardown := setup(t)
 	t.Cleanup(teardown)
 
-	want := []string{
-		"papaya.ports._id_",
-		"papaya.ports.id_1",
-	}
-
-	got, err := db.CreateIndexes(context.Background())
+	indexes, err := db.CreateIndexes(context.Background())
 	if err != nil {
 		t.Fatalf("CreateIndexes() returned error: %v", err)
 	}
 
-	if !reflect.DeepEqual(got, want) {
-		t.Errorf("CreateIndexes(): index specifications\nhave: %v\nwant: %v", got, want)
+	if got, want := len(indexes), 2; got != want {
+		t.Errorf("CreateIndexes(): have %d index specifications, want %d", got, want)
 	}
 }

@@ -49,6 +49,11 @@ type Inserter interface {
 }
 
 // Finder can retrieve Port records from storage.
+//
+// Implementations are expected to return a ports.Error instance with code
+// ErrCodeNotFound when a record matching the portID could not be found. In any
+// other case, the error will be interpreted as an internal storage error and
+// will be handled accordingly.
 type Finder interface {
 	FindPort(ctx context.Context, portID string) (*Port, error)
 }
