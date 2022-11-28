@@ -4,10 +4,10 @@ package http
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"log"
 	"net/http"
 	"os"
-	"strings"
 
 	"github.com/christgf/ports"
 	"github.com/julienschmidt/httprouter"
@@ -72,6 +72,50 @@ func (s *Server) Serve(ctx context.Context) error {
 	return g.Wait()
 }
 
+// ErrorResponse is the HTTP response body delivered for every HTTP request that
+// cannot be processed.
+type ErrorResponse struct {
+	Code    string `json:"code"`
+	Message string `json:"message"`
+}
+
+// ReplyErr examines the error provided and replies to an HTTP request with an
+// appropriate HTTP code and payload.
+//
+// If the error provided is an instance of a ports.Error, the function will use
+// the error metadata to construct a meaningful ErrorResponse, and return that
+// with an appropriate HTTP status code. If the error is not an instance of
+// ports.Error, the function will reply with an HTTP 503 (Service Unavailable)
+// and a somewhat generic payload.
+//
+// The function does not otherwise end the request; the caller should ensure no
+// further writes are done to w.
+func (s *Server) ReplyErr(w http.ResponseWriter, err error) {
+	var (
+		statusCode = http.StatusServiceUnavailable // Default HTTP status code.
+		errCode    = ports.ErrCodeInternal         // Default response error code.
+		errMsg     = "please try again later"      // Default response error message.
+	)
+
+	var portsErr *ports.Error
+	if ok := errors.As(err, &portsErr); ok {
+		errCode, errMsg = portsErr.Code, portsErr.Msg
+
+		// Use the error code to "translate" the error into an appropriate HTTP response.
+		switch portsErr.Code {
+		case ports.ErrCodeInvalid:
+			statusCode = http.StatusBadRequest
+		case ports.ErrCodeNotFound:
+			statusCode = http.StatusNotFound
+		}
+	}
+
+	s.Reply(w, statusCode, &ErrorResponse{
+		Code:    errCode,
+		Message: errMsg,
+	})
+}
+
 // Reply to an HTTP request with the specified HTTP code and an optional payload.
 // The function does not otherwise end the request, the caller should ensure no
 // further writes are done to w.
@@ -84,25 +128,4 @@ func (s *Server) Reply(w http.ResponseWriter, code int, v any) {
 			s.logger.Printf("json.Encode: %v", err)
 		}
 	}
-}
-
-// ErrorResponse is the HTTP response body delivered for every HTTP request that
-// cannot be processed.
-type ErrorResponse struct {
-	Code    string `json:"code"`
-	Message string `json:"message"`
-}
-
-// ReplyErr examines the error provided and replies to an HTTP request with an
-// appropriate HTTP code and payload. The function does not otherwise end the
-// request; the caller should ensure no further writes are done to w.
-func (s *Server) ReplyErr(w http.ResponseWriter, err error) {
-	const (
-		code = 500
-	)
-	s.logger.Printf("HTTP %d (%s): %v", code, http.StatusText(code), err)
-	s.Reply(w, code, &ErrorResponse{
-		Code:    strings.ToLower(http.StatusText(code)),
-		Message: err.Error(),
-	})
 }

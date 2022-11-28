@@ -23,7 +23,7 @@ func (db *DB) FindPort(_ context.Context, portID string) (*ports.Port, error) {
 
 	p, ok := db.data[portID]
 	if !ok {
-		return nil, &ports.Error{Code: ports.ErrCodeNotFound, Msg: "not found"}
+		return nil, &ports.Error{Code: ports.ErrCodeNotFound, Msg: "port not found"}
 	}
 
 	return &p, nil

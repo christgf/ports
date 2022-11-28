@@ -70,7 +70,7 @@ type Service struct {
 // completed. It returns nothing if the operation is successful.
 func (s *Service) StorePort(ctx context.Context, p Port) error {
 	if err := Validate(p); err != nil {
-		return &Error{Code: ErrCodeInvalid, Cause: err}
+		return &Error{Code: ErrCodeInvalid, Msg: err.Error(), Cause: err}
 	}
 
 	if err := s.Ports.InsertPort(ctx, p); err != nil {
@@ -87,7 +87,7 @@ func (s *Service) StorePort(ctx context.Context, p Port) error {
 // should not be empty.
 func (s *Service) GetPortByID(ctx context.Context, portID string) (*Port, error) {
 	if portID == "" {
-		return nil, &Error{Code: ErrCodeInvalid, Cause: ErrInvalidPortID}
+		return nil, &Error{Code: ErrCodeInvalid, Msg: "port ID should not be empty", Cause: ErrInvalidPortID}
 	}
 
 	port, err := s.Ports.FindPort(ctx, portID)
@@ -96,7 +96,7 @@ func (s *Service) GetPortByID(ctx context.Context, portID string) (*Port, error)
 			return nil, err
 		}
 
-		return nil, &Error{Code: ErrCodeInternal, Cause: err}
+		return nil, &Error{Code: ErrCodeInternal, Msg: "an unexpected error has occurred", Cause: err}
 	}
 
 	return port, nil

@@ -2,7 +2,6 @@ package http
 
 import (
 	"encoding/json"
-	"errors"
 	"net/http"
 
 	"github.com/christgf/ports"
@@ -23,7 +22,10 @@ type port struct {
 	Coords   []float64 `json:"coords,omitempty"`
 }
 
-// HandleGetPort todo
+// HandleGetPort handles HTTP requests for retrieving a ports.Port record. The
+// HTTP request must provide a non-empty port identifier as a "portID" query
+// parameter. All responses are JSON encoded, and all errors are JSON
+// representations of an ErrorResponse instance.
 func (s *Server) HandleGetPort(w http.ResponseWriter, r *http.Request) {
 	portID := r.URL.Query().Get("portID")
 
@@ -36,11 +38,19 @@ func (s *Server) HandleGetPort(w http.ResponseWriter, r *http.Request) {
 	s.Reply(w, http.StatusOK, p)
 }
 
-// HandleStorePort todo
+// ErrDecodeRequest is the error returned when an HTTP request payload cannot be
+// decoded, usually because of invalid JSON input.
+var ErrDecodeRequest = &ports.Error{Code: ports.ErrCodeInvalid, Msg: "could not decode"}
+
+// HandleStorePort handles HTTP requests for creating a new ports.Port record.
+// The HTTP request must provide all the necessary information as part of the
+// request body in JSON format. The handler should respond with HTTP 201
+// (Created) and no response body when the information is successfully recorded.
+// All errors are JSON representations of an ErrorResponse instance.
 func (s *Server) HandleStorePort(w http.ResponseWriter, r *http.Request) {
 	var p port
 	if err := json.NewDecoder(r.Body).Decode(&p); err != nil {
-		s.ReplyErr(w, errors.New("decode error"))
+		s.ReplyErr(w, ErrDecodeRequest)
 		return
 	}
 

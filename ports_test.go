@@ -113,8 +113,8 @@ func TestServiceGetPortByIDValidateError(t *testing.T) {
 		t.Fatal("GetPortByID(): expected argument error, got nothing")
 	}
 
-	if gotErr, wantErr := err, ports.ErrInvalidPortID; !errors.Is(gotErr, wantErr) {
-		t.Errorf("GetPortByID(): have %q, want port ID argument error", gotErr)
+	if !errors.Is(err, &ports.Error{Code: ports.ErrCodeInvalid}) {
+		t.Errorf("GetPortByID(): have %q, want port ID argument error", err)
 	}
 }
 
