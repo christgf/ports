@@ -1,0 +1,23 @@
+version: "3.3"
+
+services:
+  mongo:
+    image: bitnami/mongodb:4 # Latest versions do not work as expected on ARM64.
+    container_name: ports_mongodb
+    environment:
+      - MONGODB_DISABLE_SYSTEM_LOG=true
+      - MONGODB_EXTRA_FLAGS=--wiredTigerCacheSizeGB=0.25
+      - ALLOW_EMPTY_PASSWORD=true
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb:/ports/data/db
+    networks:
+      - ports_net
+
+volumes:
+  mongodb:
+
+networks:
+  ports_net:

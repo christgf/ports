@@ -11,6 +11,8 @@ import (
 )
 
 func TestDBInsertFindPort(t *testing.T) {
+	db := inmem.Open()
+
 	port := ports.Port{
 		ID:       "MXACA",
 		Name:     "Acapulco",
@@ -22,8 +24,6 @@ func TestDBInsertFindPort(t *testing.T) {
 		UNLocs:   []string{"MXACA"},
 		Coords:   []float64{-99.87, 16.85},
 	}
-
-	db := inmem.Open()
 
 	t.Log("FindPort against empty database, we expect an error")
 	_, err := db.FindPort(context.TODO(), port.ID)
