@@ -21,6 +21,7 @@ func main() {
 
 	if err := run(ctx); err != nil {
 		_, _ = fmt.Fprintln(os.Stderr, err)
+		cancelFn()
 		os.Exit(1)
 	}
 }
