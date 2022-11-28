@@ -27,7 +27,7 @@ func TestHandleGetPort(t *testing.T) {
 		Coords:   []float64{-99.87, 16.85},
 	}
 
-	s := http.NewServer(&ports.Service{
+	s := http.NewServer(":http", &ports.Service{
 		Ports: &mock.InsertFinder{
 			FindPortFn: func(ctx context.Context, portID string) (*ports.Port, error) {
 				if got, want := portID, port.ID; got != want {
@@ -74,7 +74,7 @@ func TestHandleGetPort(t *testing.T) {
 }
 
 func TestHandleGetPortNotFound(t *testing.T) {
-	s := http.NewServer(&ports.Service{
+	s := http.NewServer(":http", &ports.Service{
 		Ports: &mock.InsertFinder{
 			FindPortFn: func(ctx context.Context, portID string) (*ports.Port, error) {
 				return nil, &ports.Error{Code: ports.ErrCodeNotFound, Msg: "could not be found"}
@@ -107,7 +107,7 @@ func TestHandleGetPortNotFound(t *testing.T) {
 }
 
 func TestHandleGetPortUnexpectedError(t *testing.T) {
-	s := http.NewServer(&ports.Service{
+	s := http.NewServer(":http", &ports.Service{
 		Ports: &mock.InsertFinder{
 			FindPortFn: func(ctx context.Context, portID string) (*ports.Port, error) {
 				return nil, errors.New("something went terribly wrong")
@@ -152,7 +152,7 @@ func TestHandleStorePort(t *testing.T) {
 		Coords:   []float64{-99.87, 16.85},
 	}
 
-	s := http.NewServer(&ports.Service{
+	s := http.NewServer(":http", &ports.Service{
 		Ports: &mock.InsertFinder{
 			InsertPortFn: func(_ context.Context, p ports.Port) error {
 				if got, want := p, port; !reflect.DeepEqual(got, want) {
@@ -187,7 +187,7 @@ func TestHandleStorePort(t *testing.T) {
 }
 
 func TestHandleStorePortDecodeError(t *testing.T) {
-	s := http.NewServer(&ports.Service{})
+	s := http.NewServer(":http", &ports.Service{})
 
 	reqBody := bytes.NewBufferString("<xml></xml>")
 	rec := httptest.NewRecorder()
@@ -215,7 +215,7 @@ func TestHandleStorePortDecodeError(t *testing.T) {
 }
 
 func TestHandleStorePortInvalidError(t *testing.T) {
-	s := http.NewServer(&ports.Service{})
+	s := http.NewServer(":http", &ports.Service{})
 
 	reqBody := bytes.NewBufferString(`{ "Name": "Acapulco" }`)
 	rec := httptest.NewRecorder()
@@ -243,7 +243,7 @@ func TestHandleStorePortInvalidError(t *testing.T) {
 }
 
 func TestHandleStorePortInsertError(t *testing.T) {
-	s := http.NewServer(&ports.Service{
+	s := http.NewServer(":http", &ports.Service{
 		Ports: &mock.InsertFinder{
 			InsertPortFn: func(_ context.Context, p ports.Port) error {
 				return errors.New("the database has gone missing")

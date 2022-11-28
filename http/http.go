@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/christgf/ports"
 	"github.com/julienschmidt/httprouter"
@@ -20,23 +21,64 @@ type PortService interface {
 	GetPortByID(ctx context.Context, portID string) (*ports.Port, error)
 }
 
+const (
+	defaultReadTimeout  = 30 * time.Second
+	defaultWriteTimeout = 60 * time.Second
+	defaultIdleTimeout  = 240 * time.Second
+)
+
 // Server is our HTTP server, a thin wrapper over the standard library.
 type Server struct {
 	server *http.Server
 	logger *log.Logger
 
+	Addr  string
 	Ports PortService
 }
 
+// WithReadTimeout specifies how long the server should wait for reading an
+// entire HTTP request, including the body. A zero or negative value means there
+// will be no timeout.
+//
+// Currently used to make operations fail faster in integration tests.
+func WithReadTimeout(d time.Duration) func(*Server) {
+	return func(s *Server) {
+		s.server.ReadTimeout = d
+	}
+}
+
+// WithWriteTimeout specifies how long the server should wait before timing out
+// writing an HTTP response. A zero or negative value means there will be no
+// timeout.
+//
+// Currently used to make operations fail faster in integration tests.
+func WithWriteTimeout(d time.Duration) func(*Server) {
+	return func(s *Server) {
+		s.server.WriteTimeout = d
+	}
+}
+
 // NewServer creates and returns a new Server backed by the PortService provided.
-func NewServer(ps PortService) *Server {
-	mux := httprouter.New()
+// It is configured with reasonable defaults, but configuration can be overridden
+// using functional options.
+func NewServer(addr string, ps PortService, opts ...func(*Server)) *Server {
+	mux := &httprouter.Router{
+		HandleMethodNotAllowed: false,
+		HandleOPTIONS:          false,
+	}
 	srv := &Server{
 		server: &http.Server{
-			Handler: mux,
+			Addr:         addr,
+			Handler:      mux,
+			ReadTimeout:  defaultReadTimeout,
+			WriteTimeout: defaultWriteTimeout,
+			IdleTimeout:  defaultIdleTimeout,
 		},
 		logger: log.New(os.Stderr, "http ", log.LstdFlags),
 		Ports:  ps,
+	}
+	for _, optionFn := range opts {
+		optionFn(srv)
 	}
 
 	// HTTP API routes.

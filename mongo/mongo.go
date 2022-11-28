@@ -43,7 +43,7 @@ const (
 // available, suitable server to execute an operation. The default value is
 // defaultServerSelectTimeout.
 //
-// This is currently used to make operations fail faster in tests.
+// Currently used to make operations fail faster in tests.
 func WithServerSelectTimeout(d time.Duration) func(*DB) {
 	return func(db *DB) {
 		db.options.SetServerSelectionTimeout(d)

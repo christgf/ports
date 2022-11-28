@@ -9,7 +9,7 @@ import (
 )
 
 func TestHandleAlive(t *testing.T) {
-	s := http.NewServer(&ports.Service{})
+	s := http.NewServer(":http", &ports.Service{})
 
 	w := httptest.NewRecorder()
 	s.HandleAlive(w, httptest.NewRequest("GET", "/alive", nil))
@@ -20,7 +20,7 @@ func TestHandleAlive(t *testing.T) {
 }
 
 func TestHandleReady(t *testing.T) {
-	s := http.NewServer(&ports.Service{})
+	s := http.NewServer(":http", &ports.Service{})
 
 	w := httptest.NewRecorder()
 	s.HandleReady(w, httptest.NewRequest("GET", "/ready", nil))

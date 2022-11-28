@@ -134,7 +134,22 @@ func TestServiceGetPortByIDFindError(t *testing.T) {
 	}
 }
 
-func TestServiceGetPortByIDOK(t *testing.T) {
+func TestServiceGetPortByIDNotFound(t *testing.T) {
+	s := &ports.Service{
+		Ports: &mock.InsertFinder{
+			FindPortFn: func(context.Context, string) (*ports.Port, error) {
+				return nil, &ports.Error{Code: ports.ErrCodeNotFound}
+			},
+		},
+	}
+
+	_, err := s.GetPortByID(context.TODO(), "42")
+	if !errors.Is(err, &ports.Error{Code: ports.ErrCodeNotFound}) {
+		t.Errorf("GetPortByID(): have %v, want not found error", err)
+	}
+}
+
+func TestServiceGetPortByID(t *testing.T) {
 	port := ports.Port{
 		ID:       "MXACA",
 		Name:     "Acapulco",

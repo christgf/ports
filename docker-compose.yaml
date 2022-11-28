@@ -1,6 +1,22 @@
 version: "3.3"
 
 services:
+  ports:
+    image: ports
+    container_name: ports_dev
+    build:
+      dockerfile: Dockerfile
+    restart: on-failure
+    ports:
+      - "8080:8080"
+    environment:
+      - PORTS_HTTP_LISTEN_ADDR=:8080
+      - PORTS_MONGODB_CONN_URI=mongodb://mongo:27017/ports
+    depends_on:
+      - mongo
+    networks:
+      - local_net
+
   mongo:
     image: bitnami/mongodb:4 # Latest versions do not work as expected on ARM64.
     container_name: ports_mongodb
@@ -14,10 +30,10 @@ services:
     volumes:
       - mongodb:/ports/data/db
     networks:
-      - ports_net
+      - local_net
 
 volumes:
   mongodb:
 
 networks:
-  ports_net:
+  local_net:
