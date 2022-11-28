@@ -86,6 +86,15 @@ func (s *Service) StorePort(ctx context.Context, p Port) error {
 // system fails, if a record matching the identifier is not found, or if the
 // context is cancelled before the operation is completed. The portID argument
 // should not be empty.
-func (s *Service) GetPortByID(_ context.Context, _ string) (*Port, error) {
-	return nil, errors.New("not implemented")
+func (s *Service) GetPortByID(ctx context.Context, portID string) (*Port, error) {
+	if portID == "" {
+		return nil, ErrInvalidPortID
+	}
+
+	port, err := s.Ports.FindPort(ctx, portID)
+	if err != nil {
+		return nil, fmt.Errorf("finding: %w", err)
+	}
+
+	return port, nil
 }

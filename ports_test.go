@@ -104,3 +104,67 @@ func TestServiceStorePortOK(t *testing.T) {
 		t.Errorf("StorePort(): %v", err)
 	}
 }
+
+func TestServiceGetPortByIDValidateError(t *testing.T) {
+	s := &ports.Service{}
+
+	_, err := s.GetPortByID(context.TODO(), "")
+	if err == nil {
+		t.Fatal("GetPortByID(): expected argument error, got nothing")
+	}
+
+	if gotErr, wantErr := err, ports.ErrInvalidPortID; !errors.Is(gotErr, wantErr) {
+		t.Errorf("GetPortByID(): have %q, want port ID argument error", gotErr)
+	}
+}
+
+func TestServiceGetPortByIDFindError(t *testing.T) {
+	wantErr := errors.New("something went wrong")
+
+	s := &ports.Service{
+		Ports: &mock.InsertFinder{
+			FindPortFn: func(context.Context, string) (*ports.Port, error) {
+				return nil, wantErr
+			},
+		},
+	}
+
+	if _, err := s.GetPortByID(context.TODO(), "42"); !errors.Is(err, wantErr) {
+		t.Errorf("GetPortByID(): have %v, want %v", err, wantErr)
+	}
+}
+
+func TestServiceGetPortByIDOK(t *testing.T) {
+	port := ports.Port{
+		ID:       "MXACA",
+		Name:     "Acapulco",
+		Code:     "20101",
+		City:     "Acapulco",
+		Country:  "Mexico",
+		Province: "Guerrero",
+		Timezone: "America/Mexico_City",
+		UNLocs:   []string{"MXACA"},
+		Coords:   []float64{-99.87, 16.85},
+	}
+
+	s := &ports.Service{
+		Ports: &mock.InsertFinder{
+			FindPortFn: func(_ context.Context, portID string) (*ports.Port, error) {
+				if got, want := portID, "MXACA"; got != want {
+					t.Fatalf("GetPortByID(): have port ID argument %q, want %q", got, want)
+				}
+
+				return &port, nil
+			},
+		},
+	}
+
+	got, err := s.GetPortByID(context.TODO(), "MXACA")
+	if err != nil {
+		t.Errorf("GetPortByID(): %v", err)
+	}
+
+	if want := &port; !reflect.DeepEqual(got, want) {
+		t.Fatalf("GetPortByID(): port mismatch\nhave: %+v\nwant: %+v\n", got, want)
+	}
+}
