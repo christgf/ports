@@ -2,7 +2,6 @@ package inmem
 
 import (
 	"context"
-	"errors"
 
 	"github.com/christgf/ports"
 )
@@ -17,9 +16,6 @@ func (db *DB) InsertPort(_ context.Context, p ports.Port) error {
 	return nil
 }
 
-// ErrNotFound is returned when a ports.Port record could not be found.
-var ErrNotFound = errors.New("not found")
-
 // FindPort can retrieve ports.Port records from memory.
 func (db *DB) FindPort(_ context.Context, portID string) (*ports.Port, error) {
 	db.RLock()
@@ -27,7 +23,7 @@ func (db *DB) FindPort(_ context.Context, portID string) (*ports.Port, error) {
 
 	p, ok := db.data[portID]
 	if !ok {
-		return nil, ErrNotFound
+		return nil, &ports.Error{Code: ports.ErrCodeNotFound, Msg: "not found"}
 	}
 
 	return &p, nil

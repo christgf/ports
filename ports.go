@@ -4,7 +4,6 @@ package ports
 import (
 	"context"
 	"errors"
-	"fmt"
 )
 
 // Port represents a port.
@@ -71,11 +70,11 @@ type Service struct {
 // completed. It returns nothing if the operation is successful.
 func (s *Service) StorePort(ctx context.Context, p Port) error {
 	if err := Validate(p); err != nil {
-		return fmt.Errorf("validating: %w", err)
+		return &Error{Code: ErrCodeInvalid, Cause: err}
 	}
 
 	if err := s.Ports.InsertPort(ctx, p); err != nil {
-		return fmt.Errorf("inserting: %w", err)
+		return &Error{Code: ErrCodeInternal, Msg: "could not insert", Cause: err}
 	}
 
 	return nil
@@ -88,12 +87,16 @@ func (s *Service) StorePort(ctx context.Context, p Port) error {
 // should not be empty.
 func (s *Service) GetPortByID(ctx context.Context, portID string) (*Port, error) {
 	if portID == "" {
-		return nil, ErrInvalidPortID
+		return nil, &Error{Code: ErrCodeInvalid, Cause: ErrInvalidPortID}
 	}
 
 	port, err := s.Ports.FindPort(ctx, portID)
 	if err != nil {
-		return nil, fmt.Errorf("finding: %w", err)
+		if errors.Is(err, &Error{Code: ErrCodeNotFound}) {
+			return nil, err
+		}
+
+		return nil, &Error{Code: ErrCodeInternal, Cause: err}
 	}
 
 	return port, nil

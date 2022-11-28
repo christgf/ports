@@ -25,10 +25,10 @@ func TestDBInsertFindPort(t *testing.T) {
 
 	db := inmem.Open()
 
-	t.Logf("FindPort against empty database, we expect %q error", inmem.ErrNotFound)
+	t.Log("FindPort against empty database, we expect an error")
 	_, err := db.FindPort(context.TODO(), port.ID)
-	if got, want := err, inmem.ErrNotFound; !errors.Is(got, want) {
-		t.Fatalf("FindPort(%q): have %v, want %v", port.ID, got, want)
+	if !errors.Is(err, &ports.Error{Code: ports.ErrCodeNotFound}) {
+		t.Fatalf("FindPort(%q): have %v, want not found error", port.ID, err)
 	}
 
 	t.Logf("Inserting port with port ID %q, expecting no errors", port.ID)
