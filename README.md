@@ -45,10 +45,10 @@ options.
 
 The following command-line flags or environment variables can be used to configure the ports HTTP API.
 
-| Flag                 | Description            | Environment variable      | Default value                   |
-|----------------------|------------------------|---------------------------|---------------------------------|
-| `-http-listen-addr`  | HTTP listener address  | `PORTS_HTTP_LISTEN_ADDR`  | `:80`                           |
-| `-mongodb-conn-uri`  | MongoDB connection URI | `PORTS_MONGODB_CONN_URI`  | mongodb://localhost:27017/ports |
+| Flag                 | Description            | Environment variable      | Default value                     |
+|----------------------|------------------------|---------------------------|-----------------------------------|
+| `-http-listen-addr`  | HTTP listener address  | `PORTS_HTTP_LISTEN_ADDR`  | `:80`                             |
+| `-mongodb-conn-uri`  | MongoDB connection URI | `PORTS_MONGODB_CONN_URI`  | `mongodb://localhost:27017/ports` |
 
 ---
 
