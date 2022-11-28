@@ -28,7 +28,7 @@ func main() {
 func run(ctx context.Context) error {
 	var m Main
 	{
-		flag.StringVar(&m.FilePath, "f", "./testdata/ports.json", "Path to JSON file")
+		flag.StringVar(&m.FilePath, "f", "testdata/ports.json", "Path to JSON file")
 	}
 	flag.Parse()
 
