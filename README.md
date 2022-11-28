@@ -32,6 +32,8 @@ make down   # stop the service environment, clean up containers, networks, volum
 
 The [Makefile](./Makefile) includes a variety of other useful targets. Simply typing `make` should list all possible options.
 
+---
+
 ## File loader
 Apart from the HTTP API, the project contains a separate command-line utility, called [portload](./cmd/portload/main.go), which can be used to read and parse ports information from JSON files, as described in [technical instructions](INSTRUCTIONS.md).
 You can build `portload` into an executable using the following command:
