@@ -1,4 +1,4 @@
-// Package main can is a command-line utility for importing port records from a
+// Package main is a command-line utility for importing port records from a
 // JSON file into a database.
 package main
 
