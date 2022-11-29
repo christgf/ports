@@ -41,7 +41,7 @@ func run(ctx context.Context) error {
 	return nil
 }
 
-// Main represents the program, our HTTP API server.
+// Main represents the program, our command-line file loader.
 type Main struct {
 	FilePath string
 	Logger   *log.Logger
