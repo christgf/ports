@@ -1,7 +1,7 @@
 // Package mock defines mocks for testing.
 //
-// Mock functions should not return errors if they are not set, allowing the zero
-// value to be used as a valid mock.
+// Mock functions should return reasonable defaults when not set, allowing the
+// zero value to be used as a valid mock.
 package mock
 
 import (

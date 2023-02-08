@@ -93,6 +93,22 @@ func Open(uri string, opts ...func(*DB)) (*DB, error) {
 	return db, nil
 }
 
+// Ping sends a ping command to verify that the client is connected to the
+// database. It should be used when the application starts to verify the database
+// connection.
+func (db *DB) Ping(ctx context.Context) error {
+	return db.client.Ping(ctx, nil)
+}
+
+// Close will disconnect the MongoDB connection handle. It will wait for a
+// reasonable period of time for in-use connections to be closed and to be
+// returned to the connection pool.
+func (db *DB) Close() error {
+	ctx, cancelFn := context.WithTimeout(context.Background(), db.closeTimeout)
+	defer cancelFn() // connections close immediately if context expires.
+	return db.client.Disconnect(ctx)
+}
+
 // CreateIndexes will create/update indexes for database collections. It returns
 // collection indexes, or an error if an index operation fails. It will return
 // early in case of error, potentially without running all index operations.
@@ -122,20 +138,4 @@ func (db *DB) CreateIndexes(ctx context.Context) ([]string, error) {
 	}
 
 	return indexes, nil
-}
-
-// Ping sends a ping command to verify that the client is connected to the
-// database. It should be used when the application starts to verify the database
-// connection.
-func (db *DB) Ping(ctx context.Context) error {
-	return db.client.Ping(ctx, nil)
-}
-
-// Close will disconnect the MongoDB connection handle. It will wait for a
-// reasonable period of time for in-use connections to be closed and to be
-// returned to the connection pool.
-func (db *DB) Close() error {
-	ctx, cancelFn := context.WithTimeout(context.Background(), db.closeTimeout)
-	defer cancelFn() // connections close immediately if context expires.
-	return db.client.Disconnect(ctx)
 }

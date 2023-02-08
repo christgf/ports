@@ -18,7 +18,7 @@ type port struct {
 	Alias    []string  `json:"alias,omitempty"`
 	Regions  []string  `json:"regions,omitempty"`
 	Timezone string    `json:"timezone,omitempty"`
-	UNLocs   []string  `json:"UNLocs,omitempty"`
+	UNLocs   []string  `json:"unlocs,omitempty"`
 	Coords   []float64 `json:"coords,omitempty"`
 }
 
@@ -35,7 +35,19 @@ func (s *Server) HandleGetPort(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	s.Reply(w, http.StatusOK, p)
+	s.Reply(w, http.StatusOK, port{
+		ID:       p.ID,
+		Name:     p.Name,
+		Code:     p.Code,
+		City:     p.City,
+		Province: p.Province,
+		Country:  p.Country,
+		Alias:    p.Alias,
+		Regions:  p.Regions,
+		Timezone: p.Timezone,
+		UNLocs:   p.UNLocs,
+		Coords:   p.Coords,
+	})
 }
 
 // ErrDecodeRequest is the error returned when an HTTP request payload cannot be

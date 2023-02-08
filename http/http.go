@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -58,6 +59,14 @@ func WithWriteTimeout(d time.Duration) func(*Server) {
 	}
 }
 
+// WithLoggerOutput sets the output destination for the HTTP server logger. The
+// default output is os.Stderr. Using io.Discard disables logging altogether.
+func WithLoggerOutput(w io.Writer) func(*Server) {
+	return func(s *Server) {
+		s.logger.SetOutput(w)
+	}
+}
+
 // NewServer creates and returns a new Server backed by the PortService provided.
 // It is configured with reasonable defaults, but configuration can be overridden
 // using functional options.
@@ -75,6 +84,7 @@ func NewServer(addr string, ps PortService, opts ...func(*Server)) *Server {
 			IdleTimeout:  defaultIdleTimeout,
 		},
 		logger: log.New(os.Stderr, "http ", log.LstdFlags),
+		Addr:   addr,
 		Ports:  ps,
 	}
 	for _, optionFn := range opts {
@@ -141,9 +151,10 @@ func (s *Server) ReplyErr(w http.ResponseWriter, err error) {
 
 	var portsErr *ports.Error
 	if ok := errors.As(err, &portsErr); ok {
-		errCode, errMsg = portsErr.Code, portsErr.Msg
-
 		// Use the error code to "translate" the error into an appropriate HTTP response.
+		errCode = portsErr.Code
+		errMsg = portsErr.Msg
+
 		switch portsErr.Code {
 		case ports.ErrCodeInvalid:
 			statusCode = http.StatusBadRequest
