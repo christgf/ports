@@ -54,15 +54,15 @@ func TestHandleGetPort(t *testing.T) {
 	srv.HandleGetPort(rec, httptest.NewRequest("GET", "/ports?portID=MXACA", nil))
 
 	if got, want := rec.Result().StatusCode, 200; got != want {
-		t.Fatalf("HandleGetPort: have response code %d, want %d", got, want)
+		t.Fatalf("HandleGetPort(): have response code %d, want %d", got, want)
 	}
 	if got, want := rec.Result().Header.Get("Content-Type"), "application/json"; got != want {
-		t.Fatalf("HandleGetPort: have content type header %q, want %q", got, want)
+		t.Fatalf("HandleGetPort(): have content type header %q, want %q", got, want)
 	}
 
 	wantBody := `{"id":"MXACA","name":"Acapulco","code":"20101","city":"Acapulco","province":"Guerrero","country":"Mexico","timezone":"America/Mexico_City","unlocs":["MXACA"],"coords":[-99.87,16.85]}`
 	if gotBody := readAll(t, rec.Result().Body); gotBody != wantBody {
-		t.Errorf("HandleGetPort: unexpected response body\nhave: %s\nwant: %s", gotBody, wantBody)
+		t.Errorf("HandleGetPort(): unexpected response body\nhave: %s\nwant: %s", gotBody, wantBody)
 	}
 }
 
@@ -79,15 +79,15 @@ func TestHandleGetPortNotFound(t *testing.T) {
 	srv.HandleGetPort(rec, httptest.NewRequest("GET", "/ports?portID=FOOBAR", nil))
 
 	if got, want := rec.Result().StatusCode, 404; got != want {
-		t.Fatalf("HandleGetPort: have response code %d, want %d", got, want)
+		t.Fatalf("HandleGetPort(): have response code %d, want %d", got, want)
 	}
 	if got, want := rec.Result().Header.Get("Content-Type"), "application/json"; got != want {
-		t.Fatalf("HandleGetPort: have content type header %q, want %q", got, want)
+		t.Fatalf("HandleGetPort(): have content type header %q, want %q", got, want)
 	}
 
 	wantBody := `{"code":"missing","message":"could not be found"}`
 	if gotBody := readAll(t, rec.Result().Body); gotBody != wantBody {
-		t.Errorf("HandleGetPort: unexpected response body\nhave: %s\nwant: %s", gotBody, wantBody)
+		t.Errorf("HandleGetPort(): unexpected response body\nhave: %s\nwant: %s", gotBody, wantBody)
 	}
 }
 
@@ -104,15 +104,15 @@ func TestHandleGetPortUnexpectedError(t *testing.T) {
 	srv.HandleGetPort(rec, httptest.NewRequest("GET", "/ports?portID=FOOBAR", nil))
 
 	if got, want := rec.Result().StatusCode, 503; got != want {
-		t.Errorf("HandleGetPort: have response code %d, want %d", got, want)
+		t.Errorf("HandleGetPort(): have response code %d, want %d", got, want)
 	}
 	if got, want := rec.Result().Header.Get("Content-Type"), "application/json"; got != want {
-		t.Errorf("HandleGetPort: have content type header %q, want %q", got, want)
+		t.Errorf("HandleGetPort(): have content type header %q, want %q", got, want)
 	}
 
 	wantBody := `{"code":"internal","message":"an unexpected error has occurred"}`
 	if gotBody := readAll(t, rec.Result().Body); gotBody != wantBody {
-		t.Errorf("HandleGetPort: unexpected response body\nhave: %s\nwant: %s", gotBody, wantBody)
+		t.Errorf("HandleGetPort(): unexpected response body\nhave: %s\nwant: %s", gotBody, wantBody)
 	}
 }
 
@@ -155,7 +155,7 @@ func TestHandleStorePort(t *testing.T) {
 	}`)))
 
 	if got, want := rec.Result().StatusCode, 201; got != want {
-		t.Fatalf("HandleStorePort: have response code %d, want %d", got, want)
+		t.Fatalf("HandleStorePort(): have response code %d, want %d", got, want)
 	}
 }
 
@@ -166,15 +166,15 @@ func TestHandleStorePortDecodeError(t *testing.T) {
 	srv.HandleStorePort(rec, httptest.NewRequest("GET", "/ports", bytes.NewBufferString("<xml></xml>")))
 
 	if got, want := rec.Result().StatusCode, 400; got != want {
-		t.Errorf("HandleStorePort: have response code %d, want %d", got, want)
+		t.Errorf("HandleStorePort(): have response code %d, want %d", got, want)
 	}
 	if got, want := rec.Result().Header.Get("Content-Type"), "application/json"; got != want {
-		t.Errorf("HandleStorePort: have content type header %q, want %q", got, want)
+		t.Errorf("HandleStorePort(): have content type header %q, want %q", got, want)
 	}
 
 	wantBody := `{"code":"invalid","message":"could not decode"}`
 	if gotBody := readAll(t, rec.Result().Body); gotBody != wantBody {
-		t.Errorf("HandleStorePort: unexpected response body\nhave: %s\nwant: %s", gotBody, wantBody)
+		t.Errorf("HandleStorePort(): unexpected response body\nhave: %s\nwant: %s", gotBody, wantBody)
 	}
 }
 
@@ -185,15 +185,15 @@ func TestHandleStorePortInvalidError(t *testing.T) {
 	srv.HandleStorePort(rec, httptest.NewRequest("GET", "/ports", bytes.NewBufferString(`{ "Name": "Acapulco" }`)))
 
 	if got, want := rec.Result().StatusCode, 400; got != want {
-		t.Errorf("HandleStorePort: have response code %d, want %d", got, want)
+		t.Errorf("HandleStorePort(): have response code %d, want %d", got, want)
 	}
 	if got, want := rec.Result().Header.Get("Content-Type"), "application/json"; got != want {
-		t.Errorf("HandleStorePort: have content type header %q, want %q", got, want)
+		t.Errorf("HandleStorePort(): have content type header %q, want %q", got, want)
 	}
 
 	wantBody := `{"code":"invalid","message":"port ID should not be empty"}`
 	if gotBody := readAll(t, rec.Result().Body); gotBody != wantBody {
-		t.Errorf("HandleStorePort: unexpected response body\nhave: %s\nwant: %s", gotBody, wantBody)
+		t.Errorf("HandleStorePort(): unexpected response body\nhave: %s\nwant: %s", gotBody, wantBody)
 	}
 }
 
@@ -220,15 +220,15 @@ func TestHandleStorePortInsertError(t *testing.T) {
 	}`)))
 
 	if got, want := rec.Result().StatusCode, 503; got != want {
-		t.Errorf("HandleStorePort: have response code %d, want %d", got, want)
+		t.Errorf("HandleStorePort(): have response code %d, want %d", got, want)
 	}
 	if got, want := rec.Result().Header.Get("Content-Type"), "application/json"; got != want {
-		t.Errorf("HandleStorePort: have content type header %q, want %q", got, want)
+		t.Errorf("HandleStorePort(): have content type header %q, want %q", got, want)
 	}
 
 	wantBody := `{"code":"internal","message":"could not insert"}`
 	if gotBody := readAll(t, rec.Result().Body); gotBody != wantBody {
-		t.Errorf("HandleStorePort: unexpected response body\nhave: %s\nwant: %s", gotBody, wantBody)
+		t.Errorf("HandleStorePort(): unexpected response body\nhave: %s\nwant: %s", gotBody, wantBody)
 	}
 }
 
@@ -236,13 +236,13 @@ func readAll(t *testing.T, src io.ReadCloser) string {
 	t.Helper()
 	defer func() {
 		if err := src.Close(); err != nil {
-			t.Logf("io.Closer.Close: %v", err)
+			t.Logf("io.Close(): %v", err)
 		}
 	}()
 
 	v, err := io.ReadAll(src)
 	if err != nil {
-		t.Fatalf("io.ReadAll: %v", err)
+		t.Fatalf("io.ReadAll(): %v", err)
 	}
 
 	return string(bytes.TrimSpace(v))

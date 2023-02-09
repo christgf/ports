@@ -118,13 +118,15 @@ func (db *DB) Close() error {
 func (db *DB) CreateIndexes(ctx context.Context) ([]string, error) {
 	// Ports ID index, each port should have a unique identifier.
 	const portIDIndex = "id_1"
-	if _, err := db.Ports().Indexes().CreateOne(ctx, mongo.IndexModel{
-		Keys: bson.D{
-			{Key: "id", Value: 1},
-		},
-		Options: options.Index().SetName(portIDIndex).SetUnique(true),
-	}); err != nil {
-		return nil, fmt.Errorf("creating index %q: %w", portIDIndex, err)
+	{
+		if _, err := db.Ports().Indexes().CreateOne(ctx, mongo.IndexModel{
+			Keys: bson.D{
+				{Key: "id", Value: 1},
+			},
+			Options: options.Index().SetName(portIDIndex).SetUnique(true),
+		}); err != nil {
+			return nil, fmt.Errorf("creating index %q: %w", portIDIndex, err)
+		}
 	}
 
 	// Retrieve index specifications.

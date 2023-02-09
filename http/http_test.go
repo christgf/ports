@@ -17,12 +17,12 @@ func TestServeError(t *testing.T) {
 
 	err := srv.Serve(context.TODO())
 	if err == nil {
-		t.Fatalf("Serve: expected error, got nothing")
+		t.Fatalf("Serve(): expected error, got nothing")
 	}
 
 	var netOpErr *net.OpError
 	if !errors.As(err, &netOpErr) {
-		t.Errorf("Serve: expected %T but got %T %q", netOpErr, err, err)
+		t.Errorf("Serve(): expected %T but got %T %q", netOpErr, err, err)
 	}
 }
 
@@ -38,7 +38,7 @@ func TestServeShutdown(t *testing.T) {
 	go func() {
 		defer wg.Done()
 		if err := srv.Serve(ctx); err != nil {
-			t.Errorf("Serve: expected no error, got %v", err)
+			t.Errorf("Serve(): expected no error, got %v", err)
 		}
 	}()
 

@@ -34,9 +34,11 @@ func TestErrorError(t *testing.T) {
 }
 
 func TestErrorIs(t *testing.T) {
-	var err error = &ports.Error{Code: ports.ErrCodeInvalid}
-	if !errors.Is(err, &ports.Error{Code: ports.ErrCodeInvalid}) {
-		t.Errorf("expecting Error with CodeInvalid, got: %s", err)
+	const code = "irrelevant"
+
+	var err error = &ports.Error{Code: code}
+	if !errors.Is(err, &ports.Error{Code: code}) {
+		t.Errorf("Is(%T) expected true for error code %q, got false", err, code)
 	}
 
 	target := errors.New("something entirely different")
