@@ -74,7 +74,7 @@ golang.org/x/crypto/pbkdf2
 # golang.org/x/sync v0.1.0
 ## explicit
 golang.org/x/sync/errgroup
-# golang.org/x/text v0.3.7
+# golang.org/x/text v0.3.8
 ## explicit; go 1.17
 golang.org/x/text/transform
 golang.org/x/text/unicode/norm
