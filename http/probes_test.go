@@ -15,7 +15,7 @@ func TestHandleAlive(t *testing.T) {
 	s.HandleAlive(w, httptest.NewRequest("GET", "/alive", nil))
 
 	if got, want := w.Result().StatusCode, 200; got != want {
-		t.Errorf("HandleAlive(): have response code %q, want %q", got, want)
+		t.Errorf("HandleAlive(): have response status code %d, want %d", got, want)
 	}
 }
 
@@ -26,6 +26,6 @@ func TestHandleReady(t *testing.T) {
 	s.HandleReady(w, httptest.NewRequest("GET", "/ready", nil))
 
 	if got, want := w.Result().StatusCode, 200; got != want {
-		t.Errorf("HandleReady(): have response code %q, want %q", got, want)
+		t.Errorf("HandleReady(): have response status code %d, want %d", got, want)
 	}
 }
