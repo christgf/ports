@@ -25,8 +25,10 @@ func (e *Error) Unwrap() error {
 // Error implements the built-in error interface.
 func (e *Error) Error() string {
 	msg := e.Msg
-	if e.Cause != nil {
-		msg = e.Cause.Error()
+	if len(msg) == 0 {
+		if e.Cause != nil {
+			msg = e.Cause.Error()
+		}
 	}
 
 	return fmt.Sprintf("(%s) %s", e.Code, msg)
@@ -34,7 +36,7 @@ func (e *Error) Error() string {
 
 // Is allows to check if a service error has a specific code.
 //
-//	if errors.Is(err, &Error{Code: CodeInvalid}) {
+//	if errors.Is(err, &Error{Code: ErrCodeInvalid}) {
 //		// Do something if err has code invalid.
 //	}
 func (e *Error) Is(target error) bool {

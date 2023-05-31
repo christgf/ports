@@ -22,7 +22,7 @@ func TestErrorError(t *testing.T) {
 		},
 		{
 			err: &ports.Error{Code: ports.ErrCodeNotFound, Msg: "could not be found", Cause: errors.New("resource missing")},
-			res: "(missing) resource missing",
+			res: "(missing) could not be found",
 		},
 	}
 
