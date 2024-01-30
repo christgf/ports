@@ -80,7 +80,6 @@ type Main struct {
 //
 // The file is closed before the function is returned.
 func (m Main) Run(ctx context.Context) error {
-
 	f, err := os.Open(m.FilePath)
 	if err != nil {
 		return fmt.Errorf("opening file: %w", err)

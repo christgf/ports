@@ -115,9 +115,10 @@ func (s *Server) Serve(ctx context.Context) error {
 		return s.server.Shutdown(context.Background())
 	})
 	g.Go(func() error {
-		if err := s.server.ListenAndServe(); err != http.ErrServerClosed {
+		if err := s.server.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {
 			return err
 		}
+
 		return nil
 	})
 
