@@ -2,8 +2,7 @@
 DOCKER_COMPOSE_YAML := docker-compose.yaml
 REPO_NAME := ports
 
-# `make help` generates a help message for each target that
-# has a comment starting with ##
+# `make help` prints a helpful message.
 help:
 	@echo "Use 'make <target>' where <target> is one of the following:"
 	@echo "  check   -  run lint and static checks."
@@ -15,10 +14,9 @@ help:
 
 check:
 	go vet ./...
-	go install golang.org/x/tools/cmd/goimports@latest
-	goimports -w `find . -name '*.go' | grep -v "vendor"`
-	go install honnef.co/go/tools/cmd/staticcheck@latest
-	staticcheck ./...
+	go run golang.org/x/tools/cmd/goimports@latest -w `find . -name '*.go' | grep -v "vendor"`
+	go run honnef.co/go/tools/cmd/staticcheck@latest ./...
+	go run golang.org/x/vuln/cmd/govulncheck@latest ./...
 
 fmt:
 	go fmt ./...
