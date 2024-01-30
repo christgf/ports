@@ -18,7 +18,7 @@ services:
       - local_net
 
   mongo:
-    image: bitnami/mongodb:4 # Latest versions do not work as expected on ARM64.
+    image: mongo:6
     container_name: ports_mongodb
     environment:
       - MONGODB_DISABLE_SYSTEM_LOG=true
