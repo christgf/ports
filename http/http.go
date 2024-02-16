@@ -12,7 +12,6 @@ import (
 	"time"
 
 	"github.com/christgf/ports"
-	"github.com/julienschmidt/httprouter"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -71,10 +70,7 @@ func WithLoggerOutput(w io.Writer) func(*Server) {
 // It is configured with reasonable defaults, but configuration can be overridden
 // using functional options.
 func NewServer(addr string, ps PortService, opts ...func(*Server)) *Server {
-	mux := &httprouter.Router{
-		HandleMethodNotAllowed: false,
-		HandleOPTIONS:          false,
-	}
+	mux := http.NewServeMux()
 	srv := &Server{
 		server: &http.Server{
 			Addr:         addr,
@@ -94,12 +90,12 @@ func NewServer(addr string, ps PortService, opts ...func(*Server)) *Server {
 	// HTTP API routes.
 	{
 		// Health and readiness probes.
-		mux.HandlerFunc(http.MethodGet, "/alive", srv.HandleAlive)
-		mux.HandlerFunc(http.MethodGet, "/ready", srv.HandleReady)
+		mux.HandleFunc("GET /alive", srv.HandleAlive)
+		mux.HandleFunc("GET /ready", srv.HandleReady)
 
 		// Ports API.
-		mux.HandlerFunc(http.MethodGet, "/ports", srv.HandleGetPort)
-		mux.HandlerFunc(http.MethodPost, "/ports", srv.HandleStorePort)
+		mux.HandleFunc("GET /ports", srv.HandleGetPort)
+		mux.HandleFunc("POST /ports", srv.HandleStorePort)
 	}
 
 	return srv
