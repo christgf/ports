@@ -1,4 +1,4 @@
-.DEFAULT_GOAL := help
+.DEFAULT_GOAL := build
 DOCKER_COMPOSE_YAML := docker-compose.yaml
 REPO_NAME := ports
 
